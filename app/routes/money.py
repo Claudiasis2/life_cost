@@ -68,18 +68,25 @@ def collect_tags_from(transfers):
 
     return jsonify(transfers_json)
 
+def transfers_by_active_wallet():
+    return MoneyTransfer.query.filter(
+        MoneyTransfer.wallet_id == current_user.last_visited_wallet_id
+    )
+
 @money_bp.route("/money/<int:id>", methods=["GET"])
 @login_required
 def get_money(id):
-    money = MoneyTransfer.query.get_or_404(id)
-    # owner = User.query.get(money.user_id)
+    money = MoneyTransfer.query.filter_by(
+        id=id,
+        wallet_id=current_user.last_visited_wallet_id
+    ).first_or_404()
+
     return jsonify({
         "id": money.id,
         "amount": money.amount,
         "description": money.description,
         "created_at": money.created_at.isoformat(),
-        "modifed_at": money.modifed_at.isoformat(),
-        # "owner": money.user.username
+        "modifed_at": money.modifed_at.isoformat()
     })
 
 @money_bp.route("/add_money", methods=["POST"])
@@ -129,8 +136,7 @@ def last_money_transfers(limit):
         limit = 10
 
     transfers = (
-        MoneyTransfer.query
-        .filter(MoneyTransfer.wallet_id == current_user.last_visited_wallet_id)
+        transfers_by_active_wallet()
         .order_by(MoneyTransfer.created_at.desc())
         .limit(limit)
         .all()
@@ -212,10 +218,9 @@ def money_transfers_by_month():
     start_date = client_tz.localize(datetime(year, month, 1, 0, 0, 0))
     end_date = client_tz.localize(datetime(year, month, days_in_month, 23, 59, 59, 999999))
 
-    transfers = MoneyTransfer.query.filter(
+    transfers = transfers_by_active_wallet().filter(
         MoneyTransfer.created_at >= start_date.astimezone(pytz.utc).replace(tzinfo=None),
-        MoneyTransfer.created_at <= end_date.astimezone(pytz.utc).replace(tzinfo=None),
-        MoneyTransfer.wallet_id == current_user.last_visited_wallet_id
+        MoneyTransfer.created_at <= end_date.astimezone(pytz.utc).replace(tzinfo=None)
     ).all()
 
     daily_totals = {}
@@ -270,7 +275,41 @@ def compute_month_mean(client_date):
 
     return total_amount / monthrange(client_date.year, client_date.month)[1]
 
+@money_bp.route("/chart_data", methods=["POST"])
+@login_required
+def chart_data():
+    data = request.get_json(silent=True) or {}
+    client_time_zone = data.get("timeZone", "SYSTEM")
+    client_tz = pytz.timezone(client_time_zone)
 
+    transfers = transfers_by_active_wallet().all()
+
+    daily_totals = {}
+    for transfer in transfers:
+        local_date = transfer.created_at.replace(tzinfo=pytz.utc).astimezone(client_tz).date()
+        if local_date not in daily_totals:
+            daily_totals[local_date] = 0
+        daily_totals[local_date] += transfer.amount
+
+    return jsonify([
+        {"Date": date.isoformat(), "Close": total}
+        for date, total in sorted(daily_totals.items())
+    ])
+
+@money_bp.route("/pi_data", methods=["POST"])
+@login_required
+def pi_data():
+    transfers = transfers_by_active_wallet().all()
+
+    income = 0
+    outcome = 0
+    for transfer in transfers:
+        if transfer.amount > 0:
+            outcome += transfer.amount
+        else:
+            income += transfer.amount
+
+    return jsonify({"income": income, "outcome": outcome})
 
 
 

@@ -12,6 +12,9 @@ def google_login():
         return redirect(url_for("google.login"))
 
     resp = google.get("https://www.googleapis.com/oauth2/v1/userinfo")
+    if not resp.ok:
+        return redirect(url_for("views.index"))
+
     user_info = resp.json()
 
     user = User.query.filter_by(email=user_info["email"]).first()
@@ -27,6 +30,9 @@ def google_login():
             user.wallets.extend(wallets)
             user.last_visited_wallet_id = wallets[0].id
         db.session.add(user)
+    else:
+        user.username = user_info["name"]
+        user.picture = user_info["picture"]
 
     db.session.commit()
     login_user(user)
