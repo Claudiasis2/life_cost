@@ -16,9 +16,10 @@ def create_app():
         static_folder=os.path.join(base_dir, "static")
     )
 
-    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+    if os.getenv("OAUTHLIB_INSECURE_TRANSPORT", "1") == "1":
+        os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
-    app.config['SECRET_KEY'] = os.urandom(24)
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", os.urandom(24))
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 
     print("DATABASE_URL =", os.getenv("DATABASE_URL"))

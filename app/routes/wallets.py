@@ -1,13 +1,12 @@
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
-from flask_jwt_extended import jwt_required
 from ..models import Wallet, User
 from ..extensions import db
 
 wallets_bp = Blueprint("wallets", __name__)
 
 @wallets_bp.route("/wallet/<int:id>", methods=["GET"])
-# @login_required
+@login_required
 def get_wallet(id):
     wallet = Wallet.query.get_or_404(id)
     return jsonify({
@@ -17,7 +16,7 @@ def get_wallet(id):
     })
 
 @wallets_bp.route("/add_wallet", methods=["POST"])
-# @login_required
+@login_required
 def add_wallet():
     data = request.get_json()
     wallet = Wallet(
