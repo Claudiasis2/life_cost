@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo } from 'react';
+import { SessionProvider } from '@/features/session';
 import { configureHttpInterceptors } from '@/shared/api';
 
 const AppConfigContext = createContext(null);
@@ -11,7 +12,7 @@ export function AppProviders({ children }) {
     onForbidden: (error) => window.dispatchEvent(new CustomEvent('http:forbidden', { detail: error })),
   }), []);
 
-  return <AppConfigContext.Provider value={config}>{children}</AppConfigContext.Provider>;
+  return <AppConfigContext.Provider value={config}><SessionProvider initialSession={config}>{children}</SessionProvider></AppConfigContext.Provider>;
 }
 
 export function useAppConfig() {

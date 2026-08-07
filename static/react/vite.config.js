@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       strictPort: true,
       proxy: Object.fromEntries([
-        '/google_login', '/logout', '/money_transfers', '/money_transfer_from_date',
+        '/api', '/google_login', '/logout', '/money_transfers', '/money_transfer_from_date',
         '/last_money_transfers', '/money_transfers_by_category', '/add_money',
         '/edit_money', '/remove_money', '/update_last_visited_wallet', '/chart_data',
       ].map((path) => [path, { target: backendUrl, changeOrigin: true }])),

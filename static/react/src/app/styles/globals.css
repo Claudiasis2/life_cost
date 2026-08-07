@@ -1,4 +1,8 @@
 * { box-sizing: border-box; }
-body { margin: 0; min-width: 320px; min-height: 100vh; background: #000; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: #090d15; }
 button, a { font: inherit; }
 a { color: inherit; }
+.home-page { max-width: 42rem; padding: clamp(1.5rem, 4vw, 3rem); color: #dce9fa; background: rgba(18, 29, 47, .72); border: 1px solid rgba(148, 181, 220, .15); border-radius: 1rem; box-shadow: 0 20px 50px rgba(0,0,0,.16); }
+.home-page h1 { margin: .35rem 0 1rem; color: #fff; font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -.045em; }
+.home-page p { max-width: 34rem; margin: 0; color: #aebfd7; line-height: 1.6; }
+.home-page__eyebrow { color: #88d8ff !important; font-size: .8rem; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }

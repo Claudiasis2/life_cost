@@ -1,3 +1,3 @@
 export default function HomePage() {
-  return <section aria-labelledby="page-title"><h1 id="page-title">Gastos de la vida</h1><p>Selecciona una sección para gestionar tu información.</p></section>;
+  return <section className="home-page" aria-labelledby="page-title"><p className="home-page__eyebrow">Panel personal</p><h1 id="page-title">Bienvenido a Life Cost</h1><p>Tu espacio está listo. Las herramientas de seguimiento aparecerán aquí durante las siguientes fases de migración.</p></section>;
 }
