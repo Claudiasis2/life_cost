@@ -26,6 +26,7 @@ services:
       - mysql
 
   app:
+    build: .
     image: akevalion/life:0.0.9.Release
     container_name: life_app
     environment:

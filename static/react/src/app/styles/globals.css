@@ -2,7 +2,9 @@
 body { margin: 0; min-width: 320px; min-height: 100vh; background: #090d15; }
 button, a { font: inherit; }
 a { color: inherit; }
-.home-page { max-width: 42rem; padding: clamp(1.5rem, 4vw, 3rem); color: #dce9fa; background: rgba(18, 29, 47, .72); border: 1px solid rgba(148, 181, 220, .15); border-radius: 1rem; box-shadow: 0 20px 50px rgba(0,0,0,.16); }
-.home-page h1 { margin: .35rem 0 1rem; color: #fff; font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -.045em; }
-.home-page p { max-width: 34rem; margin: 0; color: #aebfd7; line-height: 1.6; }
-.home-page__eyebrow { color: #88d8ff !important; font-size: .8rem; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
+.calendar-page { max-width: 78rem; }
+.calendar-page__intro { margin-bottom: 1.5rem; }
+.calendar-page__intro p { margin: 0 0 .35rem; color: #88d8ff; font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.calendar-page__intro h1 { margin: 0; color: #fff; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.045em; }
+.calendar-page__intro span { display: inline-block; margin-top: .75rem; color: #adbed6; font-size: .9rem; }
+.calendar-page__error { padding: .85rem 1rem; color: #ffd1cb; background: rgba(143, 50, 50, .25); border: 1px solid rgba(255, 143, 130, .36); border-radius: .65rem; }

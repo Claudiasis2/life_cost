@@ -10,6 +10,9 @@ export default defineConfig(({ mode }) => {
   const backendUrl = env.VITE_BACKEND_URL || 'http://localhost:5000';
 
   return {
+    // En producción Flask publica el resultado de Vite bajo /static/react/dist/.
+    // Sin esta base, los imports dinámicos intentan cargar /assets/* desde la raíz.
+    base: mode === 'production' ? '/static/react/dist/' : '/',
     plugins: [react()],
     resolve: {
       alias: {

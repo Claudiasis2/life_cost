@@ -1,3 +1,32 @@
+import { useState } from 'react';
+import { Calendar, MonthlySummary, useMonthlySummary } from '@/features/calendar';
+import { useSession } from '@/features/session';
+
+function firstDayOfMonth(date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function addMonths(date, amount) {
+  return new Date(date.getFullYear(), date.getMonth() + amount, 1);
+}
+
 export default function HomePage() {
-  return <section className="home-page" aria-labelledby="page-title"><p className="home-page__eyebrow">Panel personal</p><h1 id="page-title">Bienvenido a Life Cost</h1><p>Tu espacio está listo. Las herramientas de seguimiento aparecerán aquí durante las siguientes fases de migración.</p></section>;
+  const [visibleMonth, setVisibleMonth] = useState(() => firstDayOfMonth(new Date()));
+  const [selectedDate, setSelectedDate] = useState(null);
+  const { walletDataVersion } = useSession();
+  const { data: summary, error, isLoading } = useMonthlySummary(visibleMonth, walletDataVersion);
+
+  const changeMonth = (amount) => {
+    setVisibleMonth((month) => addMonths(month, amount));
+    setSelectedDate(null);
+  };
+
+  return (
+    <section className="calendar-page" aria-labelledby="page-title">
+      <div className="calendar-page__intro"><p>Panel personal</p><h1 id="page-title">Resumen de actividad</h1>{selectedDate && <span>Fecha seleccionada: {selectedDate.toLocaleDateString('es-ES')}</span>}</div>
+      {error && <p className="calendar-page__error" role="alert">No se pudo cargar el resumen mensual. Inténtalo de nuevo.</p>}
+      <Calendar month={visibleMonth} selectedDate={selectedDate} summary={summary} isLoading={isLoading} onPreviousMonth={() => changeMonth(-1)} onNextMonth={() => changeMonth(1)} onSelectDate={setSelectedDate} />
+      <MonthlySummary summary={summary} />
+    </section>
+  );
 }
