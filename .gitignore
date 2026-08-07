@@ -7,3 +7,6 @@ __pycache__/
 .env
 .docker-compose.yml
 life_db.session.sql
+/static/react/node_modules/
+/static/react/dist/
+/static/react/.env.local
