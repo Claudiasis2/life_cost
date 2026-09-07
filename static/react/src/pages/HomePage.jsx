@@ -13,6 +13,7 @@ function addMonths(date, amount) {
 
 export default function HomePage() {
   const [visibleMonth, setVisibleMonth] = useState(() => firstDayOfMonth(new Date()));
+  const [today] = useState(() => new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const { walletDataVersion } = useSession();
   const { data: summary, error, isLoading, reload } = useMonthlySummary(visibleMonth, walletDataVersion);
@@ -21,14 +22,15 @@ export default function HomePage() {
     setVisibleMonth((month) => addMonths(month, amount));
     setSelectedDate(null);
   };
+  const workingDate = selectedDate ?? today;
 
   return (
     <section className="calendar-page" aria-labelledby="page-title">
-      <div className="calendar-page__intro"><p>Panel personal</p><h1 id="page-title">Resumen de actividad</h1>{selectedDate && <span>Fecha seleccionada: {selectedDate.toLocaleDateString('es-ES')}</span>}</div>
+      <div className="calendar-page__intro"><p>Panel personal</p><h1 id="page-title">Resumen de actividad</h1><span>{selectedDate ? 'Fecha seleccionada' : 'Fecha de trabajo'}: {workingDate.toLocaleDateString('es-ES')}</span></div>
       {error && <p className="calendar-page__error" role="alert">No se pudo cargar el resumen mensual. Inténtalo de nuevo.</p>}
       <Calendar month={visibleMonth} selectedDate={selectedDate} summary={summary} isLoading={isLoading} onPreviousMonth={() => changeMonth(-1)} onNextMonth={() => changeMonth(1)} onSelectDate={setSelectedDate} />
       <MonthlySummary summary={summary} />
-      <TransfersPanel selectedDate={selectedDate} walletDataVersion={walletDataVersion} onMutationSuccess={reload} />
+      <TransfersPanel selectedDate={workingDate} walletDataVersion={walletDataVersion} onMutationSuccess={reload} />
     </section>
   );
 }

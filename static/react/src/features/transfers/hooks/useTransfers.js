@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { createTransfer, deleteTransfer, getRecentTransfers, getTransfersByCategory, getTransfersByDate, updateTransfer } from '../api';
+import { createTransfer, deleteTransfer, getTransfersByCategory, getTransfersByDate, updateTransfer } from '../api';
 
 function parseTags(tagsText) {
   return tagsText.split(',').map((tag) => tag.trim()).filter(Boolean);
@@ -14,6 +14,13 @@ export function useTransfers({ selectedDate, selectedTag, walletDataVersion }) {
 
   const refresh = useCallback(async () => {
     const requestId = ++latestRequest.current;
+    if (!selectedTag && !selectedDate) {
+      setTransfers([]);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
@@ -21,7 +28,7 @@ export function useTransfers({ selectedDate, selectedTag, walletDataVersion }) {
         ? await getTransfersByCategory(selectedTag.id)
         : selectedDate
           ? await getTransfersByDate(selectedDate)
-          : await getRecentTransfers();
+          : [];
       if (requestId === latestRequest.current) setTransfers(result);
     } catch (nextError) {
       if (requestId === latestRequest.current) setError(nextError);

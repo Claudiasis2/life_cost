@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_login import login_required, current_user
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import desc, func
 from calendar import monthrange
 import pytz
@@ -11,6 +11,35 @@ money_bp = Blueprint("money", __name__)
 
 def get_date(date):
     return datetime.fromisoformat(date.replace("Z", "+00:00"))
+
+def get_client_datetime(data):
+    client_time_zone = data.get("timeZone", "SYSTEM")
+    client_tz = pytz.timezone(client_time_zone)
+    client_date = get_date(data.get("date"))
+
+    if client_date.tzinfo is None:
+        client_date = client_tz.localize(client_date)
+    else:
+        client_date = client_date.astimezone(client_tz)
+
+    return client_date, client_tz
+
+def utc_naive(date):
+    return date.astimezone(pytz.utc).replace(tzinfo=None)
+
+def local_day_bounds(client_date, client_tz):
+    local_day = client_date.date()
+    start_date = client_tz.localize(datetime.combine(local_day, datetime.min.time()))
+    end_date = client_tz.localize(datetime.combine(local_day + timedelta(days=1), datetime.min.time()))
+    return start_date, end_date
+
+def local_month_bounds(client_date, client_tz):
+    start_date = client_tz.localize(datetime(client_date.year, client_date.month, 1))
+    if client_date.month == 12:
+        end_date = client_tz.localize(datetime(client_date.year + 1, 1, 1))
+    else:
+        end_date = client_tz.localize(datetime(client_date.year, client_date.month + 1, 1))
+    return start_date, end_date
 
 def get_created_at(data):
     created_at = data.get("created_at")
@@ -179,23 +208,14 @@ def remove_money(id):
 @login_required
 def money_transfers_by_date():
     data = request.get_json()
-    client_time_zone = data.get("timeZone", "SYSTEM")
-    client_date = get_date(data.get("date"))
-    client_tz = pytz.timezone(client_time_zone)
-
-    if client_date.tzinfo is None:
-        client_date = client_tz.localize(client_date)
-    else:
-        client_date = client_date.astimezone(client_tz)
-
-    start_date = client_date.replace(hour=0, minute=0, second=0, microsecond=0)
-    end_date = client_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+    client_date, client_tz = get_client_datetime(data)
+    start_date, end_date = local_day_bounds(client_date, client_tz)
 
     transfers = (
         MoneyTransfer.query
         .filter(
-            MoneyTransfer.created_at >= start_date.astimezone(pytz.utc).replace(tzinfo=None),
-            MoneyTransfer.created_at < end_date.astimezone(pytz.utc).replace(tzinfo=None),
+            MoneyTransfer.created_at >= utc_naive(start_date),
+            MoneyTransfer.created_at < utc_naive(end_date),
             MoneyTransfer.wallet_id == current_user.last_visited_wallet_id
         )
         .order_by(desc(MoneyTransfer.id))
@@ -207,20 +227,12 @@ def money_transfers_by_date():
 @login_required
 def money_transfers_by_month():
     data = request.get_json()
-    client_time_zone = data.get("timeZone", "SYSTEM")
-    client_date = get_date(data.get("date"))
-    client_tz = pytz.timezone(client_time_zone)
-
-    year = client_date.year
-    month = client_date.month
-    days_in_month = monthrange(year, month)[1]
-
-    start_date = client_tz.localize(datetime(year, month, 1, 0, 0, 0))
-    end_date = client_tz.localize(datetime(year, month, days_in_month, 23, 59, 59, 999999))
+    client_date, client_tz = get_client_datetime(data)
+    start_date, end_date = local_month_bounds(client_date, client_tz)
 
     transfers = transfers_by_active_wallet().filter(
-        MoneyTransfer.created_at >= start_date.astimezone(pytz.utc).replace(tzinfo=None),
-        MoneyTransfer.created_at <= end_date.astimezone(pytz.utc).replace(tzinfo=None)
+        MoneyTransfer.created_at >= utc_naive(start_date),
+        MoneyTransfer.created_at < utc_naive(end_date)
     ).all()
 
     daily_totals = {}
@@ -231,8 +243,8 @@ def money_transfers_by_month():
         daily_totals[local_date] += transfer.amount
 
     return jsonify({
-        "month": month,
-        "year": year,
+        "month": client_date.month,
+        "year": client_date.year,
         "mean": compute_mean(),
         "mean_month": compute_month_mean(client_date),
         "total_amount": sum(daily_totals.values()),

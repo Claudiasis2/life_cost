@@ -1,1 +1,1 @@
-export { createTransfer, deleteTransfer, getRecentTransfers, getTransfersByCategory, getTransfersByDate, updateTransfer } from './transfersApi';
+export { createTransfer, deleteTransfer, getTransfersByCategory, getTransfersByDate, updateTransfer } from './transfersApi';

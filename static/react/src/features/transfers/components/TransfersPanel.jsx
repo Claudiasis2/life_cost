@@ -11,7 +11,8 @@ export default function TransfersPanel({ onMutationSuccess, selectedDate, wallet
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const { error, isLoading, isMutating, removeTransfer, saveTransfer, transfers } = useTransfers({ selectedDate, selectedTag, walletDataVersion });
   const defaultDate = selectedDate ?? new Date();
-  const title = selectedTag ? `Tag: ${selectedTag.name}` : selectedDate ? `Movimientos del ${selectedDate.toLocaleDateString('es-ES')}` : 'Últimos movimientos';
+  const title = selectedTag ? `Tag: ${selectedTag.name}` : `Movimientos del ${selectedDate?.toLocaleDateString('es-ES')}`;
+  const hasTransfersToShow = transfers.length > 0;
 
   const closeEditor = () => { setIsEditorOpen(false); setEditedTransfer(null); };
   const openEditor = (transfer = null) => { setSelectedTransfer(null); setEditedTransfer(transfer); setIsEditorOpen(true); };
@@ -29,7 +30,7 @@ export default function TransfersPanel({ onMutationSuccess, selectedDate, wallet
     <section className="transfers-panel">
       {selectedTag && <div className="transfers-panel__filter"><span>Filtrando por <strong>{selectedTag.name}</strong></span><button type="button" onClick={clearTag}>Quitar filtro</button></div>}
       {error && <p className="transfers-panel__error" role="alert">No se pudieron actualizar los movimientos. Inténtalo de nuevo.</p>}
-      <TransfersTable transfers={transfers} isLoading={isLoading} title={title} onAdd={() => openEditor()} onDelete={handleDelete} onEdit={openEditor} onSelect={setSelectedTransfer} onTagSelect={selectTag} />
+      {isLoading || hasTransfersToShow ? <TransfersTable transfers={transfers} isLoading={isLoading} title={title} onAdd={() => openEditor()} onDelete={handleDelete} onEdit={openEditor} onSelect={setSelectedTransfer} onTagSelect={selectTag} /> : <div className="transfers-panel__idle"><button className="button button--primary" type="button" onClick={() => openEditor()}>Añadir gasto de este día</button></div>}
       <TransferDetailsModal isOpen={Boolean(selectedTransfer)} transfer={selectedTransfer} onClose={() => setSelectedTransfer(null)} onDelete={handleDelete} onEdit={openEditor} onTagSelect={selectTag} />
       <EditTransferModal defaultDate={defaultDate} isOpen={isEditorOpen} isSaving={isMutating} transfer={editedTransfer} onClose={closeEditor} onSave={handleSave} />
     </section>

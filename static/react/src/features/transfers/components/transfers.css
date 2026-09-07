@@ -1,4 +1,5 @@
 .transfers-panel { margin-top: 1rem; }
+.transfers-panel__idle { display: flex; justify-content: flex-end; min-height: 3rem; }
 .transfers-panel__filter { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1rem; margin-bottom: .8rem; color: #c8d9ee; background: rgba(37, 70, 108, .45); border: 1px solid rgba(129, 193, 239, .22); border-radius: .7rem; }
 .transfers-panel__filter button { color: #aee2ff; background: transparent; border: 0; cursor: pointer; text-decoration: underline; }
 .transfers-panel__error { padding: .85rem 1rem; color: #ffd1cb; background: rgba(143, 50, 50, .25); border: 1px solid rgba(255, 143, 130, .36); border-radius: .65rem; }

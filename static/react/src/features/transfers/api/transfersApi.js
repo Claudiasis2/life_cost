@@ -1,15 +1,12 @@
 import { httpClient } from '@/shared/api';
+import { toLocalDateString } from '@/shared/utils';
 
 const getTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-export function getRecentTransfers() {
-  return httpClient('/last_money_transfers/5');
-}
 
 export function getTransfersByDate(date) {
   return httpClient('/money_transfer_from_date', {
     method: 'POST',
-    body: { date: date.toISOString(), timeZone: getTimeZone() },
+    body: { date: toLocalDateString(date), timeZone: getTimeZone() },
   });
 }
 
