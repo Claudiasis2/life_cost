@@ -4,7 +4,11 @@ button, a { font: inherit; }
 a { color: inherit; }
 .calendar-page { max-width: 78rem; }
 .calendar-page__intro { margin-bottom: 1.5rem; }
+.calendar-page__intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
 .calendar-page__intro p { margin: 0 0 .35rem; color: #88d8ff; font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .calendar-page__intro h1 { margin: 0; color: #fff; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.045em; }
 .calendar-page__intro span { display: inline-block; margin-top: .75rem; color: #adbed6; font-size: .9rem; }
 .calendar-page__error { padding: .85rem 1rem; color: #ffd1cb; background: rgba(143, 50, 50, .25); border: 1px solid rgba(255, 143, 130, .36); border-radius: .65rem; }
+.calendar-page__chart-button { padding: .6rem .85rem; color: #d9efff; background: rgba(47, 97, 140, .45); border: 1px solid rgba(126, 199, 244, .4); border-radius: .55rem; cursor: pointer; white-space: nowrap; }
+.calendar-page__chart-button:hover { background: rgba(64, 126, 177, .56); }
+@media (max-width: 520px) { .calendar-page__intro { align-items: flex-start; flex-direction: column; } }

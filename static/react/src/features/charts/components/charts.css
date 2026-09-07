@@ -1,0 +1,20 @@
+.chart-modal__backdrop { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; padding: 1rem; background: rgba(4, 8, 15, .72); backdrop-filter: blur(5px); }
+.chart-modal { width: min(100%, 58rem); max-height: calc(100vh - 2rem); overflow: auto; color: #dce9fa; background: #162337; border: 1px solid #3a4d69; border-radius: 1rem; box-shadow: 0 25px 60px rgba(0,0,0,.42); }
+.chart-modal__header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.15rem 1.35rem; border-bottom: 1px solid rgba(148, 181, 220, .13); }
+.chart-modal__header p { margin: 0 0 .2rem; color: #88d8ff; font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.chart-modal__header h2 { margin: 0; color: #fff; font-size: 1.25rem; }
+.chart-modal__header button { width: 2rem; height: 2rem; color: #bbcae0; background: transparent; border: 0; border-radius: .45rem; cursor: pointer; font-size: 1.55rem; line-height: 1; }
+.chart-modal__header button:hover { background: rgba(255,255,255,.08); }
+.chart-modal__content { padding: 1.25rem; }
+.chart-modal__error { color: #ffb9b1; }
+.balance-chart__canvas { overflow-x: auto; }
+.balance-chart__canvas svg { display: block; width: 100%; min-width: 38rem; height: auto; }
+.balance-chart__grid { stroke: rgba(148, 181, 220, .15); stroke-width: 1; }
+.balance-chart__month-grid { stroke: rgba(148, 181, 220, .1); stroke-width: 1; stroke-dasharray: 3 4; }
+.balance-chart__axis-line { stroke: rgba(148, 181, 220, .35); stroke-width: 1; }
+.balance-chart__axis { fill: #9eb1ca; font-size: 12px; }
+.balance-chart__line { fill: none; stroke: #88d8ff; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.balance-chart__point { fill: #b8a0ff; stroke: #162337; stroke-width: 3; cursor: pointer; }
+.balance-chart__point:hover, .balance-chart__point:focus { fill: #fff; outline: none; }
+.balance-chart__hint, .balance-chart__empty { margin: .75rem 0 0; color: #9eb1ca; font-size: .85rem; text-align: center; }
+@media (max-width: 620px) { .chart-modal__content { padding: 1rem; } }
