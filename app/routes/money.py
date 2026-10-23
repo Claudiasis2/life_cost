@@ -324,6 +324,168 @@ def pi_data():
     return jsonify({"income": income, "outcome": outcome})
 
 
+def _shifted_month_bounds(client_date, client_tz, offset):
+    total = client_date.year * 12 + (client_date.month - 1) + offset
+    year, month_index = divmod(total, 12)
+    month = month_index + 1
+    start_date = client_tz.localize(datetime(year, month, 1))
+    if month == 12:
+        end_date = client_tz.localize(datetime(year + 1, 1, 1))
+    else:
+        end_date = client_tz.localize(datetime(year, month + 1, 1))
+    return year, month, start_date, end_date
+
+
+def _sums_for_range(start_utc, end_utc, wallet_id):
+    base_filters = [
+        MoneyTransfer.wallet_id == wallet_id,
+        MoneyTransfer.created_at >= start_utc,
+        MoneyTransfer.created_at < end_utc,
+    ]
+    ingresos = (
+        db.session.query(func.sum(MoneyTransfer.amount))
+        .filter(*base_filters, MoneyTransfer.amount > 0)
+        .scalar()
+    ) or 0
+    egresos_neg = (
+        db.session.query(func.sum(MoneyTransfer.amount))
+        .filter(*base_filters, MoneyTransfer.amount < 0)
+        .scalar()
+    ) or 0
+    egresos = abs(egresos_neg)
+    return float(ingresos), float(egresos)
+
+
+def _money(value):
+    return round(float(value or 0), 2)
+
+
+def _pct_change(current, previous):
+    if previous is None or previous == 0:
+        return None
+    return round((current - previous) / abs(previous) * 100, 2)
+
+
+def _category_totals(start_utc, end_utc, wallet_id, egresos_total, limit=6):
+    if not egresos_total:
+        return []
+
+    rows = (
+        db.session.query(
+            Category.id,
+            Category.name,
+            func.sum(func.abs(MoneyTransfer.amount)).label("total"),
+        )
+        .join(Tag, Tag.category_id == Category.id)
+        .join(MoneyTransfer, MoneyTransfer.id == Tag.money_transfer_id)
+        .filter(
+            MoneyTransfer.wallet_id == wallet_id,
+            MoneyTransfer.created_at >= start_utc,
+            MoneyTransfer.created_at < end_utc,
+            MoneyTransfer.amount < 0,
+        )
+        .group_by(Category.id, Category.name)
+        .order_by(func.sum(func.abs(MoneyTransfer.amount)).desc())
+        .all()
+    )
+
+    categorized_total = sum(float(row.total or 0) for row in rows)
+    # Gastos con amount < 0 que no tienen Tag/Category (el JOIN los excluye):
+    # van a "Otros" para que las categorías sumen el 100% de los egresos.
+    uncategorized_total = max(float(egresos_total) - categorized_total, 0)
+
+    categories = []
+    for row in rows[:limit]:
+        total = _money(row.total)
+        categories.append({
+            "id": row.id,
+            "name": row.name,
+            "total": total,
+            "pct": round(total / float(egresos_total) * 100, 2),
+        })
+
+    others_total = sum(float(row.total or 0) for row in rows[limit:]) + uncategorized_total
+    if others_total > 0:
+        others_total = _money(others_total)
+        categories.append({
+            "id": None,
+            "name": "Otros",
+            "total": others_total,
+            "pct": round(others_total / float(egresos_total) * 100, 2),
+        })
+
+    return categories
+
+
+@money_bp.route("/dashboard_summary", methods=["POST"])
+@login_required
+def dashboard_summary():
+    data = request.get_json(silent=True) or {}
+    wallet_id = current_user.last_visited_wallet_id
+    if wallet_id is None:
+        return jsonify({"error": "No active wallet"}), 400
+
+    try:
+        if data.get("date"):
+            client_date, client_tz = get_client_datetime(data)
+        else:
+            client_time_zone = data.get("timeZone", "SYSTEM")
+            client_tz = pytz.timezone(client_time_zone)
+            client_date = datetime.now(client_tz)
+    except pytz.exceptions.UnknownTimeZoneError:
+        return jsonify({"error": "Unknown timeZone"}), 400
+
+    year, month, start_date, end_date = _shifted_month_bounds(client_date, client_tz, 0)
+    prev_year, prev_month, prev_start, prev_end = _shifted_month_bounds(client_date, client_tz, -1)
+
+    ingresos, egresos = _sums_for_range(utc_naive(start_date), utc_naive(end_date), wallet_id)
+    prev_ingresos, prev_egresos = _sums_for_range(utc_naive(prev_start), utc_naive(prev_end), wallet_id)
+    ingresos, egresos = _money(ingresos), _money(egresos)
+    prev_ingresos, prev_egresos = _money(prev_ingresos), _money(prev_egresos)
+    saldo = _money(ingresos - egresos)
+    prev_saldo = _money(prev_ingresos - prev_egresos)
+
+    evolution = []
+    for offset in range(-7, 1):
+        ev_year, ev_month, ev_start, ev_end = _shifted_month_bounds(client_date, client_tz, offset)
+        ev_ingresos, ev_egresos = _sums_for_range(utc_naive(ev_start), utc_naive(ev_end), wallet_id)
+        evolution.append({
+            "key": f"{ev_year:04d}-{ev_month:02d}",
+            "year": ev_year,
+            "month": ev_month,
+            "ingresos": _money(ev_ingresos),
+            "egresos": _money(ev_egresos),
+        })
+
+    categories = _category_totals(utc_naive(start_date), utc_naive(end_date), wallet_id, egresos)
+
+    transfers = transfers_by_active_wallet().filter(
+        MoneyTransfer.created_at >= utc_naive(start_date),
+        MoneyTransfer.created_at < utc_naive(end_date)
+    ).all()
+    daily_totals = {}
+    for transfer in transfers:
+        local_date = transfer.created_at.replace(tzinfo=pytz.utc).astimezone(client_tz).date()
+        daily_totals[local_date] = daily_totals.get(local_date, 0) + transfer.amount
+
+    return jsonify({
+        "wallet_id": wallet_id,
+        "month": {"year": year, "month": month, "ingresos": ingresos, "egresos": egresos, "saldo": saldo},
+        "prev_month": {"year": prev_year, "month": prev_month, "ingresos": prev_ingresos, "egresos": prev_egresos, "saldo": prev_saldo},
+        "deltas_pct": {
+            "ingresos": _pct_change(ingresos, prev_ingresos),
+            "egresos": _pct_change(egresos, prev_egresos),
+            "saldo": _pct_change(saldo, prev_saldo),
+        },
+        "evolution": evolution,
+        "by_category": categories,
+        "days": [
+            {"day": day.day, "total_amount": _money(total)}
+            for day, total in daily_totals.items()
+        ],
+    })
+
+
 
 
 

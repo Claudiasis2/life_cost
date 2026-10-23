@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from flask_dance.contrib.google import make_google_blueprint
 from .extensions import db, login_manager
 from .models import User
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 load_dotenv()
 
@@ -15,6 +16,7 @@ def create_app():
         template_folder=os.path.join(base_dir, "templates"),
         static_folder=os.path.join(base_dir, "static")
     )
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1)
 
     if os.getenv("OAUTHLIB_INSECURE_TRANSPORT", "1") == "1":
         os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
@@ -22,7 +24,6 @@ def create_app():
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", os.urandom(24))
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 
-    print("DATABASE_URL =", os.getenv("DATABASE_URL"))
     db.init_app(app)
     login_manager.init_app(app)
 

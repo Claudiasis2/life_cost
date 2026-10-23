@@ -33,6 +33,8 @@ class Wallet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), unique=True, nullable=False)
     description = db.Column(db.String(300))
+    # Código ISO 4217 de 3 letras (EUR, BOB, ...). NULL = pendiente de asignar.
+    currency = db.Column(db.String(3))
 
     users = db.relationship(
         "User",

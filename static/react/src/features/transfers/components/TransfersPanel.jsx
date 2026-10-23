@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTransfers } from '../hooks';
 import EditTransferModal from './EditTransferModal';
 import TransferDetailsModal from './TransferDetailsModal';
 import TransfersTable from './TransfersTable';
 
-export default function TransfersPanel({ onMutationSuccess, selectedDate, walletDataVersion }) {
+export default function TransfersPanel({ createSignal, onMutationSuccess, selectedDate, walletDataVersion }) {
   const [selectedTag, setSelectedTag] = useState(null);
   const [selectedTransfer, setSelectedTransfer] = useState(null);
   const [editedTransfer, setEditedTransfer] = useState(null);
@@ -16,6 +16,17 @@ export default function TransfersPanel({ onMutationSuccess, selectedDate, wallet
 
   const closeEditor = () => { setIsEditorOpen(false); setEditedTransfer(null); };
   const openEditor = (transfer = null) => { setSelectedTransfer(null); setEditedTransfer(transfer); setIsEditorOpen(true); };
+  // Etapa A: los botones externos (Header + saludo) comparten este mismo
+  // editor mediante una señal numérica. No se duplica formulario ni lógica:
+  // cada incremento abre el editor de creación con defaultDate=workingDate.
+  const previousSignal = useRef(createSignal ?? 0);
+  useEffect(() => {
+    if (createSignal === undefined) return;
+    if (createSignal !== previousSignal.current) {
+      previousSignal.current = createSignal;
+      if (createSignal > 0) openEditor();
+    }
+  }, [createSignal]);
   const selectTag = (tag) => { setSelectedTag(tag); setSelectedTransfer(null); };
   const clearTag = () => setSelectedTag(null);
   const handleSave = async (values) => { await saveTransfer(values); closeEditor(); onMutationSuccess?.(); };

@@ -1,9 +1,18 @@
+import re
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
 from ..models import Wallet, User
 from ..extensions import db
 
 wallets_bp = Blueprint("wallets", __name__)
+
+ISO_4217 = re.compile(r"^[A-Z]{3}$")
+
+def parse_currency(data):
+    currency = (data.get("currency") or "").strip().upper()
+    if not ISO_4217.match(currency):
+        return None
+    return currency
 
 @wallets_bp.route("/wallet/<int:id>", methods=["GET"])
 @login_required
@@ -12,16 +21,21 @@ def get_wallet(id):
     return jsonify({
         "id": wallet.id,
         "name": wallet.name,
-        "description": wallet.description
+        "description": wallet.description,
+        "currency": wallet.currency
     })
 
 @wallets_bp.route("/add_wallet", methods=["POST"])
 @login_required
 def add_wallet():
     data = request.get_json()
+    currency = parse_currency(data)
+    if currency is None:
+        return jsonify({"error": "currency must be an ISO 4217 code (e.g. EUR, BOB)"}), 400
     wallet = Wallet(
         name=data["name"],
-        description=data.get("description")
+        description=data.get("description"),
+        currency=currency
     )
     db.session.add(wallet)
     db.session.commit()

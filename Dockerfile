@@ -17,10 +17,14 @@ RUN apk add --no-cache \
     pkgconfig
 
 WORKDIR /app
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
 COPY . /app
 COPY --from=frontend-builder /frontend/dist /app/static/react/dist
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
 
 EXPOSE 5000
-CMD ["python", "./run.py"]
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120", "wsgi:app"]

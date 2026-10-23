@@ -14,6 +14,10 @@ export function getTransfersByCategory(categoryId) {
   return httpClient(`/money_transfers_by_category/${categoryId}`);
 }
 
+export function getLastTransfers(limit = 5, options = {}) {
+  return httpClient(`/last_money_transfers/${limit}`, { signal: options.signal });
+}
+
 export function createTransfer(values) {
   return httpClient('/add_money', { method: 'POST', body: values });
 }

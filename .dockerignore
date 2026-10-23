@@ -1,8 +1,10 @@
 .env
 docker-compose.yml
+.git/
 venv/
 __pycache__/
-.vscode
+.vscode/
 *.pyc
 static/react/node_modules/
 static/react/dist/
+life_db.session.sql

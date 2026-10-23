@@ -1,0 +1,191 @@
+/* Etapa A: distribución clara aislada a Inicio (scope .home-light).
+   No toca el tema oscuro global ni la lógica de tarjetas/gráficos (B/C/D). */
+
+.home-light {
+  --home-bg: #f4f7fb;
+  --home-card: #ffffff;
+  --home-text: #0f172a;
+  --home-muted: #64748b;
+  --home-border: #e6ecf3;
+  --home-accent: #16a34a;
+  --home-accent-dark: #15803d;
+  --home-blue: #2563eb;
+  background: var(--home-bg);
+  border-radius: 1rem;
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  color: var(--home-text);
+}
+
+.home-light .calendar-page__intro {
+  display: none;
+}
+
+.home-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.home-main {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.home-aside {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+  max-width: 100%;
+  position: sticky;
+  top: 1rem;
+}
+
+.home-aside > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.home-aside .calendar {
+  max-width: 100%;
+}
+
+/* En la columna de 330px el calendario original (tabla min-width:38rem,
+   celdas de 5.9rem) no cabe y queda comprimido con scroll horizontal.
+   Solo CSS y solo en escritorio 2 columnas: se anula el min-width y se
+   compacta celda/fuente para que las 7 columnas y los días se vean
+   completos. Sin tocar Calendar.jsx/CalendarDay.jsx. */
+@media (min-width: 1200px) {
+  .home-aside .calendar__header {
+    padding: 1rem 1.1rem;
+  }
+
+  .home-aside .calendar h2 {
+    font-size: 1.05rem;
+  }
+
+  .home-aside .calendar__table-wrap {
+    overflow-x: visible;
+  }
+
+  .home-aside .calendar table {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .home-aside .calendar th {
+    padding: 0.5rem 0.15rem;
+    font-size: 0.65rem;
+    text-align: center;
+  }
+
+  .home-aside .calendar td {
+    height: auto;
+    padding: 0.12rem;
+  }
+
+  .home-aside .calendar-day__button {
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 0.15rem;
+    min-height: 2.9rem;
+    padding: 0.3rem;
+  }
+
+  .home-aside .calendar-day__number {
+    font-size: 0.8rem;
+  }
+
+  .home-aside .calendar-day__amount {
+    max-width: 100%;
+    font-size: 0.66rem;
+  }
+}
+
+/* Saludo + botón destacado (propuesta1: título + botón verde a la derecha). */
+.home-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.25rem 0.25rem 0;
+}
+
+.home-intro .dash-greeting {
+  margin: 0;
+}
+
+.home-intro .dash-greeting h2 {
+  color: var(--home-text);
+}
+
+.home-intro .dash-greeting p {
+  color: var(--home-muted);
+}
+
+.home-intro__add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.5rem;
+  color: #fff;
+  background: var(--home-accent);
+  border: 0;
+  border-radius: 0.9rem;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 12px 26px rgba(22, 163, 74, 0.28);
+}
+
+.home-intro__add:hover {
+  background: var(--home-accent-dark);
+}
+
+/* Fila de gráficos preparada para Etapa B (Evolución + Donut lado a lado).
+   En Etapa A solo hay un hijo (EvolutionCard): ocupa todo el ancho.
+   En Etapa B, al añadir CategoryDonut como segundo hijo, el grid pasa
+   automáticamente a dos columnas sin tocar EvolutionCard. */
+.home-charts {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.home-charts > :only-child {
+  grid-column: 1 / -1;
+}
+
+.home-charts > * {
+  min-width: 0;
+}
+
+@media (max-width: 1199px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .home-aside {
+    position: static;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-charts {
+    grid-template-columns: 1fr;
+  }
+
+  .home-intro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .home-intro__add {
+    width: 100%;
+    justify-content: center;
+  }
+}

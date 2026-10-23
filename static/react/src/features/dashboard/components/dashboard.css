@@ -1,0 +1,31 @@
+.dash-greeting { margin: 1.5rem 0 1rem; }
+.dash-greeting h2 { margin: 0; color: #fff; font-size: clamp(1.5rem, 3vw, 2.1rem); letter-spacing: -.03em; }
+.dash-greeting p { margin: .35rem 0 0; color: #adbed6; font-size: .9rem; }
+.dash-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.dash-kpi { display: grid; gap: .35rem; padding: 1rem 1.15rem; color: #dce9fa; background: rgba(18, 29, 47, .58); border: 1px solid rgba(148, 181, 220, .12); border-radius: .8rem; }
+.dash-kpi__label { color: #91a6c1; font-size: .8rem; }
+.dash-kpi__value { font-size: 1.35rem; letter-spacing: -.02em; }
+.dash-kpi__delta { color: #88d8ff; font-size: .78rem; }
+.dash-error { padding: .85rem 1rem; color: #ffd1cb; background: rgba(143, 50, 50, .25); border: 1px solid rgba(255, 143, 130, .36); border-radius: .65rem; }
+.dash-evolution { margin-bottom: 1.5rem; padding: 1rem 1.15rem; color: #dce9fa; background: rgba(18, 29, 47, .58); border: 1px solid rgba(148, 181, 220, .12); border-radius: .8rem; }
+.dash-evolution__header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .5rem; }
+.dash-evolution__header h2 { margin: 0; color: #fff; font-size: 1.05rem; letter-spacing: -.01em; }
+.dash-evolution__legend { display: flex; gap: 1rem; color: #91a6c1; font-size: .8rem; }
+.dash-evolution__legend-item { display: inline-flex; align-items: center; gap: .4rem; }
+.dash-evolution__dot { width: .6rem; height: .6rem; border-radius: 50%; }
+.dash-evolution__dot--income { background: #34d399; }
+.dash-evolution__dot--expense { background: #fb7185; }
+.dash-evolution__canvas { overflow-x: auto; }
+.dash-evolution__canvas svg { display: block; width: 100%; min-width: 34rem; height: auto; }
+.dash-evolution__grid { stroke: rgba(148, 181, 220, .15); stroke-width: 1; }
+.dash-evolution__axis-line { stroke: rgba(148, 181, 220, .35); stroke-width: 1; }
+.dash-evolution__axis { fill: #9eb1ca; font-size: 12px; }
+.dash-evolution__line { fill: none; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.dash-evolution__line--income { stroke: #34d399; }
+.dash-evolution__line--expense { stroke: #fb7185; }
+.dash-evolution__point { stroke: #162337; stroke-width: 3; cursor: default; }
+.dash-evolution__point--income { fill: #34d399; }
+.dash-evolution__point--expense { fill: #fb7185; }
+.dash-evolution__point:hover, .dash-evolution__point:focus { fill: #fff; outline: none; }
+.dash-evolution__empty { margin: .75rem 0 0; color: #9eb1ca; font-size: .85rem; text-align: center; }
+@media (max-width: 760px) { .dash-kpis { grid-template-columns: 1fr; gap: .6rem; } }

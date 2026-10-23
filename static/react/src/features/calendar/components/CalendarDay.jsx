@@ -1,6 +1,8 @@
+import { useActiveCurrency } from '@/features/session';
 import { formatMoney } from '@/shared/utils';
 
 export default function CalendarDay({ date, amount, isSelected, isToday, onSelect }) {
+  const currency = useActiveCurrency();
   if (!date) return <td className="calendar-day calendar-day--empty" aria-hidden="true" />;
 
   const hasAmount = amount !== undefined;
@@ -15,7 +17,7 @@ export default function CalendarDay({ date, amount, isSelected, isToday, onSelec
         onClick={() => onSelect(date)}
       >
         <span className="calendar-day__number">{date.getDate()}</span>
-        {hasAmount && <span className={`calendar-day__amount ${amountClass}`}>{formatMoney(amount)}</span>}
+        {hasAmount && <span className={`calendar-day__amount ${amountClass}`}>{formatMoney(amount, currency)}</span>}
       </button>
     </td>
   );

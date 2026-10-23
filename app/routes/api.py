@@ -7,7 +7,8 @@ def serialize_wallet(wallet):
     return {
         "id": wallet.id,
         "name": wallet.name,
-        "description": wallet.description
+        "description": wallet.description,
+        "currency": wallet.currency
     }
 
 @api_bp.route("/me", methods=["GET"])

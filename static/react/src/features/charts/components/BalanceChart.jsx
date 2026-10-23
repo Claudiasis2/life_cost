@@ -1,3 +1,4 @@
+import { useActiveCurrency } from '@/features/session';
 import { formatMoney } from '@/shared/utils';
 
 const WIDTH = 800;
@@ -72,6 +73,7 @@ function getAxisLabelTicks(monthTicks) {
 }
 
 export default function BalanceChart({ data, onSelectDate }) {
+  const currency = useActiveCurrency();
   if (!data.length) return <p className="balance-chart__empty">Todavía no hay movimientos para mostrar.</p>;
 
   const dates = data.map((point) => point.date.getTime());
@@ -87,7 +89,7 @@ export default function BalanceChart({ data, onSelectDate }) {
   return (
     <div className="balance-chart__canvas">
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label="Evolución acumulada de los movimientos">
-        {moneyTicks.map((value) => <g key={value}><line className="balance-chart__grid" x1={PADDING.left} x2={WIDTH - PADDING.right} y1={y(value)} y2={y(value)} /><text className="balance-chart__axis" x={PADDING.left - 10} y={y(value) + 4} textAnchor="end">{formatMoney(value)}</text></g>)}
+        {moneyTicks.map((value) => <g key={value}><line className="balance-chart__grid" x1={PADDING.left} x2={WIDTH - PADDING.right} y1={y(value)} y2={y(value)} /><text className="balance-chart__axis" x={PADDING.left - 10} y={y(value) + 4} textAnchor="end">{formatMoney(value, currency)}</text></g>)}
         {monthTicks.map((date) => {
           const monthX = Math.max(PADDING.left, x(date.getTime()));
           return <line className="balance-chart__month-grid" key={date.toISOString()} x1={monthX} x2={monthX} y1={PADDING.top} y2={HEIGHT - PADDING.bottom} />;
@@ -101,7 +103,7 @@ export default function BalanceChart({ data, onSelectDate }) {
         })}
         <line className="balance-chart__axis-line" x1={PADDING.left} x2={WIDTH - PADDING.right} y1={HEIGHT - PADDING.bottom} y2={HEIGHT - PADDING.bottom} />
         <path className="balance-chart__line" d={path} />
-        {data.map((point) => <circle className="balance-chart__point" key={point.date.toISOString()} cx={x(point.date.getTime())} cy={y(point.balance)} r="5" tabIndex="0" role="button" aria-label={`Ver movimientos del ${point.date.toLocaleDateString('es-ES')}`} onClick={() => onSelectDate(point.date)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') onSelectDate(point.date); }}><title>{`${point.date.toLocaleDateString('es-ES')}: ${formatMoney(point.balance)}`}</title></circle>)}
+        {data.map((point) => <circle className="balance-chart__point" key={point.date.toISOString()} cx={x(point.date.getTime())} cy={y(point.balance)} r="5" tabIndex="0" role="button" aria-label={`Ver movimientos del ${point.date.toLocaleDateString('es-ES')}`} onClick={() => onSelectDate(point.date)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') onSelectDate(point.date); }}><title>{`${point.date.toLocaleDateString('es-ES')}: ${formatMoney(point.balance, currency)}`}</title></circle>)}
       </svg>
       <p className="balance-chart__hint">Selecciona un punto para ver los movimientos de ese día.</p>
     </div>
