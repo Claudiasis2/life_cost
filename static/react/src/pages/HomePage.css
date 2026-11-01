@@ -104,6 +104,33 @@
   }
 }
 
+.movements-page__intro {
+  padding: 0.25rem 0.25rem 0;
+}
+
+.movements-page__intro p {
+  margin: 0 0 0.35rem;
+  color: var(--home-blue);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.movements-page__intro h1 {
+  margin: 0;
+  color: var(--home-text);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  letter-spacing: -0.045em;
+}
+
+.movements-page__intro span {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: var(--home-muted);
+  font-size: 0.9rem;
+}
+
 /* Saludo + botón destacado (propuesta1: título + botón verde a la derecha). */
 .home-intro {
   display: flex;
@@ -187,5 +214,122 @@
   .home-intro__add {
     width: 100%;
     justify-content: center;
+  }
+}
+
+/* Movimientos: distribucion responsive aislada de Inicio. */
+.movements-page {
+  width: 100%;
+  min-width: 0;
+}
+
+.movements-page__layout {
+  grid-template-columns: minmax(0, 1fr) minmax(17.5rem, 21rem);
+  gap: clamp(1rem, 1.6vw, 1.5rem);
+  min-width: 0;
+}
+
+.movements-page__main,
+.movements-page__aside {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.movements-page__main {
+  display: grid;
+  gap: 1rem;
+}
+
+.movements-page__aside {
+  position: static;
+  display: grid;
+  gap: 1rem;
+}
+
+.movements-page__main > *,
+.movements-page__aside > *,
+.movements-page__aside .calendar {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.movements-page .transfers-panel {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin-top: 0;
+}
+
+.movements-page .transfers-table,
+.movements-page .transfers-table__scroll,
+.movements-page .calendar__table-wrap {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.movements-page .transfers-table {
+  position: relative;
+}
+
+.movements-page .transfers-table__scroll,
+.movements-page .calendar__table-wrap {
+  overscroll-behavior-inline: contain;
+}
+
+.movements-page .transfers-table table {
+  min-width: 36rem;
+}
+
+@media (max-width: 1199px) {
+  .movements-page__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .movements-page__aside {
+    position: static;
+  }
+}
+
+@media (max-width: 900px) {
+  .movements-page .transfers-table table {
+    min-width: 34rem;
+  }
+
+  .movements-page .calendar__table-wrap {
+    overflow-x: visible;
+  }
+
+  .movements-page .calendar table {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .movements-page .calendar th {
+    padding: 0.55rem 0.12rem;
+    font-size: 0.62rem;
+    text-align: center;
+  }
+
+  .movements-page .calendar td {
+    height: 4.3rem;
+    padding: 0.12rem;
+  }
+
+  .movements-page .calendar-day__button {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.12rem;
+    padding: 0.28rem;
+    text-align: left;
+  }
+
+  .movements-page .calendar-day__number {
+    font-size: 0.78rem;
+  }
+
+  .movements-page .calendar-day__amount {
+    max-width: 100%;
+    font-size: 0.62rem;
   }
 }

@@ -11,7 +11,7 @@ export default function TransfersPanel({ createSignal, onMutationSuccess, select
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const { error, isLoading, isMutating, removeTransfer, saveTransfer, transfers } = useTransfers({ selectedDate, selectedTag, walletDataVersion });
   const defaultDate = selectedDate ?? new Date();
-  const title = selectedTag ? `Tag: ${selectedTag.name}` : `Movimientos del ${selectedDate?.toLocaleDateString('es-ES')}`;
+  const title = selectedTag ? `Tag: ${selectedTag.name}` : selectedDate ? `Movimientos del ${selectedDate.toLocaleDateString('es-ES')}` : 'Movimientos';
   const hasTransfersToShow = transfers.length > 0;
 
   const closeEditor = () => { setIsEditorOpen(false); setEditedTransfer(null); };

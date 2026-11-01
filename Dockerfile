@@ -25,6 +25,6 @@ RUN pip install --no-cache-dir --upgrade pip \
 COPY . /app
 COPY --from=frontend-builder /frontend/dist /app/static/react/dist
 
-EXPOSE 5000
+EXPOSE 3000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120", "wsgi:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:3000", "--workers", "2", "--timeout", "120", "wsgi:app"]

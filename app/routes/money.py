@@ -172,6 +172,25 @@ def last_money_transfers(limit):
     )
     return collect_tags_from(transfers)
 
+def escape_like(value):
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+@money_bp.route("/search_money_transfers", methods=["GET"])
+@login_required
+def search_money_transfers():
+    query = (request.args.get("q") or "").strip()
+    if not query:
+        return jsonify([])
+
+    pattern = f"%{escape_like(query)}%"
+    transfers = (
+        transfers_by_active_wallet()
+        .filter(MoneyTransfer.description.ilike(pattern, escape="\\"))
+        .order_by(MoneyTransfer.created_at.desc(), MoneyTransfer.id.desc())
+        .all()
+    )
+    return collect_tags_from(transfers)
+
 @money_bp.route("/money_transfers_by_category/<int:category_id>", methods=["GET"])
 @login_required
 def money_transfers_by_category(category_id):

@@ -1,7 +1,7 @@
 import { useActiveCurrency } from '@/features/session';
 import { formatMoney } from '@/shared/utils';
 
-export default function CalendarDay({ date, amount, isSelected, isToday, onSelect }) {
+export default function CalendarDay({ date, amount, isHighlighted, isSelected, isToday, onSelect }) {
   const currency = useActiveCurrency();
   if (!date) return <td className="calendar-day calendar-day--empty" aria-hidden="true" />;
 
@@ -11,7 +11,7 @@ export default function CalendarDay({ date, amount, isSelected, isToday, onSelec
   return (
     <td className="calendar-day">
       <button
-        className={`calendar-day__button ${isToday ? 'calendar-day__button--today' : ''} ${isSelected ? 'calendar-day__button--selected' : ''}`}
+        className={`calendar-day__button ${isToday ? 'calendar-day__button--today' : ''} ${isSelected ? 'calendar-day__button--selected' : ''} ${isHighlighted ? 'calendar-day__button--highlighted' : ''}`}
         type="button"
         aria-pressed={isSelected}
         onClick={() => onSelect(date)}

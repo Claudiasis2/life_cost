@@ -27,9 +27,9 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       proxy: Object.fromEntries([
         '/api', '/google_login', '/logout', '/money_transfers', '/money_transfer_from_date',
-        '/last_money_transfers', '/money_transfers_by_category', '/add_money',
-        '/edit_money', '/remove_money', '/update_last_visited_wallet', '/chart_data',
-        '/dashboard_summary',
+        '/last_money_transfers', '/search_money_transfers', '/money_transfers_by_category',
+        '/add_money', '/edit_money', '/remove_money', '/update_last_visited_wallet',
+        '/chart_data', '/dashboard_summary',
       ].map((path) => [path, { target: backendUrl, changeOrigin: true }])),
     },
     preview: { host: '127.0.0.1', port: 4173, strictPort: true },

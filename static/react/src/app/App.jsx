@@ -3,6 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 import { MainLayout, RouteLoading } from '@/shared/components';
 
 const HomePage = lazy(() => import('../pages'));
+const CalendarPage = lazy(() => import('../pages/CalendarPage'));
+const MovementsPage = lazy(() => import('../pages/MovementsPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
 export default function App() {
@@ -11,6 +13,8 @@ export default function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="calendario" element={<CalendarPage />} />
+          <Route path="movimientos" element={<MovementsPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

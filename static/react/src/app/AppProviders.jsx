@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo } from 'react';
+import { SearchProvider } from '@/features/search';
 import { SessionProvider } from '@/features/session';
 import { configureHttpInterceptors } from '@/shared/api';
 
@@ -12,7 +13,7 @@ export function AppProviders({ children }) {
     onForbidden: (error) => window.dispatchEvent(new CustomEvent('http:forbidden', { detail: error })),
   }), []);
 
-  return <AppConfigContext.Provider value={config}><SessionProvider initialSession={config}>{children}</SessionProvider></AppConfigContext.Provider>;
+  return <AppConfigContext.Provider value={config}><SessionProvider initialSession={config}><SearchProvider>{children}</SearchProvider></SessionProvider></AppConfigContext.Provider>;
 }
 
 export function useAppConfig() {

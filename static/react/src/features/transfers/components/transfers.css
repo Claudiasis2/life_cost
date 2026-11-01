@@ -12,6 +12,8 @@
 .transfers-table th { padding: .8rem 1rem; color: #8094b0; font-size: .72rem; letter-spacing: .06em; text-align: left; text-transform: uppercase; }
 .transfers-table td { padding: .95rem 1rem; border-top: 1px solid rgba(148, 181, 220, .09); }
 .transfers-table tr:hover td { background: rgba(91, 159, 208, .06); }
+.transfers-table__row--clickable { cursor: pointer; }
+.transfers-table__row--clickable:focus-visible { outline: 2px solid #70c5f2; outline-offset: -2px; }
 .transfers-table__empty { padding: 2.5rem !important; color: #9eb1ca; text-align: center; }
 .transfer-row__description { padding: 0; color: #edf5ff; background: transparent; border: 0; cursor: pointer; text-align: left; }
 .transfer-row__description:hover { color: #8bdcff; }

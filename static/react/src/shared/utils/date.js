@@ -5,6 +5,16 @@ export function toLocalDateString(date) {
   return `${year}-${month}-${day}`;
 }
 
+export function fromLocalDateString(value) {
+  if (typeof value !== 'string') return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+  if (!match) return null;
+
+  const [, year, month, day] = match.map(Number);
+  const date = new Date(year, month - 1, day);
+  return toLocalDateString(date) === value.trim() ? date : null;
+}
+
 const ISO_WITH_ZONE = /([zZ]|[+-]\d{2}:?\d{2})$/;
 
 // El backend almacena created_at/modifed_at en UTC naive y los serializa

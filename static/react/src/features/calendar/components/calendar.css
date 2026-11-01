@@ -16,6 +16,7 @@
 .calendar-day__button:hover { background: rgba(116, 203, 255, .1); }
 .calendar-day__button--today .calendar-day__number { display: grid; width: 1.75rem; height: 1.75rem; place-items: center; color: #07111f; background: #88d8ff; border-radius: 50%; font-weight: 800; }
 .calendar-day__button--selected { background: rgba(118, 135, 255, .18); border-color: rgba(156, 168, 255, .6); }
+.calendar-day__button--highlighted { box-shadow: inset 0 0 0 2px #fbbf24; background: rgba(251, 191, 36, .16); border-color: #fbbf24; }
 .calendar-day__number { align-self: flex-start; font-size: .9rem; }
 .calendar-day__amount { overflow: hidden; max-width: 76%; font-size: .74rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
 .calendar-day__amount--income, .money--income { color: #85edb5; }

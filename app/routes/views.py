@@ -3,8 +3,7 @@ from flask_login import current_user
 
 views_bp = Blueprint("views", __name__)
 
-@views_bp.route("/")
-def index():
+def render_app():
     if current_user.is_authenticated:
         return render_template(
             "index.html",
@@ -12,6 +11,18 @@ def index():
             is_authenticated=True
         )
     return redirect("/google_login")
+
+@views_bp.route("/")
+def index():
+    return render_app()
+
+@views_bp.route("/calendario")
+def calendar():
+    return render_app()
+
+@views_bp.route("/movimientos")
+def movements():
+    return render_app()
 
 @views_bp.route("/privacy")
 def privacy():
