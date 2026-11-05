@@ -12,3 +12,5 @@ life_db.session.sql
 /static/react/.env.local
 life-cost-2_1.0.0_arm64.tar
 life-cost-2_1.0.1_arm64.tar
+.env.txt
+*.tar
